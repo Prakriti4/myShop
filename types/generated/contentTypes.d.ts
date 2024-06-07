@@ -819,23 +819,83 @@ export interface ApiAboutAbout extends Schema.SingleType {
   };
 }
 
+export interface ApiOrderOrder extends Schema.CollectionType {
+  collectionName: 'orders';
+  info: {
+    singularName: 'order';
+    pluralName: 'orders';
+    displayName: 'order';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    email: Attribute.Email & Attribute.Required;
+    orderid: Attribute.UID & Attribute.Required;
+    paymentInfo: Attribute.JSON;
+    products: Attribute.JSON;
+    address: Attribute.String & Attribute.Required;
+    name: Attribute.String & Attribute.Required;
+    transactionid: Attribute.String;
+    amount: Attribute.Integer & Attribute.Required;
+    status: Attribute.String & Attribute.Required;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::order.order',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::order.order',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiProductProduct extends Schema.CollectionType {
   collectionName: 'products';
   info: {
     singularName: 'product';
     pluralName: 'products';
     displayName: 'product';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    name: Attribute.String &
+    title: Attribute.String &
       Attribute.Required &
       Attribute.SetMinMaxLength<{
         minLength: 3;
         maxLength: 71;
       }>;
+    slug: Attribute.UID &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        minLength: 3;
+        maxLength: 110;
+      }>;
+    description: Attribute.Text;
+    image: Attribute.Media & Attribute.Required;
+    size: Attribute.String &
+      Attribute.SetMinMaxLength<{
+        maxLength: 70;
+      }>;
+    color: Attribute.Enumeration<
+      ['red', 'blue', 'yellow', 'green', 'black', 'white']
+    > &
+      Attribute.Required;
+    price: Attribute.Integer & Attribute.Required;
+    availableQty: Attribute.Integer & Attribute.Required;
+    category: Attribute.Enumeration<
+      ['monitors', 'laptop', 'watch', 'earpods', 'charger']
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -873,6 +933,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::about.about': ApiAboutAbout;
+      'api::order.order': ApiOrderOrder;
       'api::product.product': ApiProductProduct;
     }
   }
